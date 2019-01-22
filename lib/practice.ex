@@ -22,4 +22,9 @@ defmodule Practice do
   end
 
   # TODO: Add a palindrome? function.
+  def palindrome?(x) do
+    stringStart = Kernel.elem(String.split_at(x, Kernel.trunc(String.length(x)/2)), 0)
+    x
+    |> String.ends_with?(String.reverse(stringStart))
+  end
 end
