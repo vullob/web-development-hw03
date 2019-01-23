@@ -10,8 +10,8 @@ defmodule Practice.Calc do
     expr
     |> String.split(~r/\s+/)
     |> tag_tokens
-    |> IO.puts
- #  |> convert_to_postfix
+    |> convert_to_postfix
+ #   |> IO.puts
  #  |> hd
  #  |> parse_float
  #  |> :math.sqrt()
@@ -26,33 +26,54 @@ defmodule Practice.Calc do
   end
 
 
-#  def convert_to_postfix(arr) do
-#    operators = []
-#    foldl(arr, [], fn x, acc -> cond do
-#                                  elem(x, 0) == :num -> [acc | x]
-#                                  elem(x, 0) == :add -> acc ++ operators
-#                                  elem(x, 0) == :sub -> acc ++ operators)
-#                                  elem(x, 0) == :mul -> acc ++ 
-#  end
+  def convert_to_postfix(arr) do
+    val = List.foldl(arr, {[], []}, fn x, acc -> val = postfix_char(x, acc);
+                                 IO.inspect(val); IO.inspect(val); val   end)
+     IO.puts("stored OPS")
+     IO.inspect(val)
+     elem(val, 0) ++ elem(val, 1) 
+     end
 
-#  def parse_postfix(x, acc, operators) do
-#     cond do
-#       elem(x, 0) == :num -> acc += elem(x, 1)
-#       
-#  end
-  
+ def postfix_char(char, accumulator) do
+    IO.puts("new char")
+    IO.inspect(char)
+    acc = elem(accumulator, 0)
+    storedOps = elem(accumulator, 1)
+    cond do 
+      length(storedOps) == 0 -> {acc, [char]}
+      true -> 
+        case char do
+          {:num, x} -> { acc ++ [char], storedOps} 
+          {:add, x} -> { acc ++ Enum.reverse(storedOps), [char] } 
+          {:div, x} -> postfix_mul_div(char, acc, storedOps)
+          {:sub, x} -> { acc ++ Enum.reverse(storedOps), [char] }
+          {:mul, x} -> postfix_mul_div(char, acc, storedOps)
+        end   
+   end
+end
+
+   def postfix_mul_div(char, acc, storedOps) do
+    case hd(storedOps) do
+      {:add, x} -> { acc, storedOps ++ [char] }
+      {:sub, x} -> { acc, storedOps ++ [char] }
+      {:mul, x} -> { acc ++ Enum.reverse(storedOps), [char]}
+      {:div, x} -> { acc ++ Enum.reverse(storedOps), [char]}
+    end
+   end
+
+
 
   def tag_tokens(arr) do
-   List.foldl(arr, [], fn x, acc -> acc ++ [acc | tokenize_char(x)] end)
+    Enum.map(arr, fn x -> tokenize_char(x) end)
   end
 
   def tokenize_char(char) do
-    cond do
-      Float.parse(char) -> {:num, Float.parse(char)}
+   cond do
       char == "+" -> {:add, char}
       char == "/" -> {:div, char}
       char == "-" -> {:sub, char}
       char == "*" -> {:mul, char}
+      Float.parse(char) -> {:num, elem(Float.parse(char), 0)}
     end 
   end
 end
