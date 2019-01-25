@@ -32,5 +32,5 @@ defmodule Practice.PracticeTest do
     assert palindrome?("noon") == true
     assert palindrome?("tenet") == true
     assert palindrome?("todo") == false
-  end 
+  end
 end

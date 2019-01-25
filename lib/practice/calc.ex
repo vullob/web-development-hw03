@@ -8,23 +8,11 @@ defmodule Practice.Calc do
     # This should handle +,-,*,/ with order of operations,
     # but doesn't need to handle parens.
     expr
+    |> String.trim
     |> String.split(~r/\s+/)
     |> tag_tokens
     |> convert_to_postfix
-    |> IO.inspect
     |> calculate
- #  |> IO.puts
- #  |> hd
- #  |> parse_float
- #  |> :math.sqrt()
-
-    # Hint:
-    # expr
-    # |> split
-    # |> tag_tokens  (e.g. [+, 1] => [{:op, "+"}, {:num, 1.0}]
-    # |> convert to postfix
-    # |> reverse to prefix
-    # |> evaluate as a stack calculator using pattern matching
   end
 
 
@@ -49,33 +37,6 @@ defmodule Practice.Calc do
   end
 
 
-  def div_postfix(acc) do
-    rhs = List.pop_at(acc, 0)
-    lhs = List.pop_at(elem(rhs,1), 0)
-    [elem(lhs, 0)/elem(rhs, 0) | elem(lhs, 1)]
-  end
-
-
-
-  def mul_postfix(acc) do
-    rhs = List.pop_at(acc, 0)
-    lhs = List.pop_at(elem(rhs,1), 0)
-    [elem(lhs, 0) * elem(rhs, 0) | elem(lhs, 1)]
-  end
-
-  def sub_postfix(acc) do
-    rhs = List.pop_at(acc, 0)
-    lhs = List.pop_at(elem(rhs,1), 0)
-    [elem(lhs, 0) - elem(rhs, 0) | elem(lhs, 1)]
-  end
-
-  def add_postfix(acc) do
-    rhs = List.pop_at(acc, 0)
-    lhs = List.pop_at(elem(rhs,1), 0)
-    [elem(lhs, 0) + elem(rhs, 0) | elem(lhs, 1)]
-  end
-
-
   def convert_to_postfix(arr) do
     val = List.foldl(arr, {[], []}, fn x, acc -> postfix_char(x, acc) end)
      elem(val, 0) ++ Enum.reverse(elem(val, 1))
@@ -88,7 +49,7 @@ defmodule Practice.Calc do
       elem(char, 0) != :num && length(storedOps) == 0 -> {acc, [char]}
       true ->
         case char do
-          {:num, x} -> { acc ++ [char], storedOps}
+          {:num, _} -> { acc ++ [char], storedOps}
           {:add, "+"} -> { acc ++ Enum.reverse(storedOps), [char] }
           {:div, "/"} -> postfix_mul_div(char, acc, storedOps)
           {:sub, "-"} -> { acc ++ Enum.reverse(storedOps), [char] }
